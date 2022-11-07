@@ -54,7 +54,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     const result = await Employee.findOneAndDelete({ id: params?.id });
     if (!result) throw new Error("Employee Not found");
     return res
-      .status(201)
+      .status(204)
       .json({ message: "Successfully Deleted", data: result, error: false });
   } catch (error) {
     return res.status(500).json({ message: error, data: null, error: true });
@@ -80,7 +80,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
 
     const result = await employee.save();
     return res
-      .status(201)
+      .status(204)
       .json({ message: "Successfully Updated", data: result, error: false });
   } catch (error) {
     console.log("error", error);

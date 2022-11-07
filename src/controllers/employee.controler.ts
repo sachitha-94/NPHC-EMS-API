@@ -84,7 +84,6 @@ export const updateEmployee = async (req: Request, res: Response) => {
       .status(204)
       .json({ message: "Successfully Updated", data: result, error: false });
   } catch (error) {
-    console.log("error", error);
     return res.status(500).json({ message: error, data: null, error: true });
   }
 };

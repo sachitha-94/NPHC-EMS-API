@@ -21,22 +21,23 @@ export const getAllEmployees = async (
 
 export const addEmployeesfromCSV = async (req: Request, res: Response) => {
   try {
-    const { file } = req;
+    const { files } = req;
 
-    if (!file?.path) throw Error("File is not fount");
+    if (!files) throw Error("File is not fount");
 
-    const jsonObj = await csv().fromFile(file?.path);
+    let employeeArray: EmployeeInput[] = [];
 
-    const employees = jsonObj?.map((employee) => {
-      return {
-        id: employee?.id,
-        fullName: employee.fullName,
-        userName: employee.userName,
-        salary: employee.salary,
-      } as EmployeeInput;
-    });
+    for (let index = 0; index < files.length; index++) {
+      const empArray: EmployeeInput[] = await csv({ ignoreEmpty: true })
+        .fromFile(files[index]?.path)
+        .preFileLine((fileLineString) => {
+          if (fileLineString.startsWith("#")) return "";
+          return fileLineString;
+        });
+      employeeArray = [...employeeArray, ...empArray];
+    }
 
-    const result = await Employee.insertMany(employees);
+    const result = await Employee.insertMany(employeeArray);
     return res
       .status(201)
       .json({ message: "Successfully Uploaded", data: result, error: false });

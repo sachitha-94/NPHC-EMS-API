@@ -13,7 +13,7 @@ const upload = multer({ dest: "uploads/" });
 
 router.get("/", getAllEmployees);
 
-router.post("/upload", upload.single("file"), addEmployeesfromCSV);
+router.post("/upload", upload.array("file"), addEmployeesfromCSV);
 
 router.put("/:id", updateEmployee);
 

@@ -21,26 +21,69 @@ export const getAllEmployees = async (
 
 export const addEmployeesfromCSV = async (req: Request, res: Response) => {
   try {
-    const { file } = req;
+    const { files } = req;
 
-    if (!file?.path) throw Error();
+    if (!files) throw Error("File is not fount");
 
-    const jsonObj = await csv().fromFile(file?.path);
+    let employeeArray: EmployeeInput[] = [];
 
-    const employees = jsonObj?.map((employee) => {
-      return {
-        id: employee?.id,
-        fullName: employee.fullName,
-        userName: employee.userName,
-        salary: employee.salary,
-      } as EmployeeInput;
-    });
+    for (let index = 0; index < files.length; index++) {
+      const empArray: EmployeeInput[] = await csv({ ignoreEmpty: true })
+        .fromFile(files[index]?.path)
+        .preFileLine((fileLineString) => {
+          if (fileLineString.startsWith("#")) return "";
+          return fileLineString;
+        });
+      employeeArray = [...employeeArray, ...empArray];
+    }
 
-    const result = await Employee.insertMany(employees);
+    const result = await Employee.insertMany(employeeArray);
     return res
       .status(201)
       .json({ message: "Successfully Uploaded", data: result, error: false });
   } catch (error) {
-    return res.status(500).json({ message: "Error", data: null, error: true });
+    return res.status(500).json({ message: error, data: null, error: true });
+  }
+};
+
+export const deleteEmployee = async (req: Request, res: Response) => {
+  try {
+    const { params } = req;
+
+    if (!params?.id) throw new Error("Id is Required");
+
+    const result = await Employee.findOneAndDelete({ id: params?.id });
+    if (!result) throw new Error("Employee Not found");
+    return res
+      .status(204)
+      .json({ message: "Successfully Deleted", data: result, error: false });
+  } catch (error) {
+    return res.status(500).json({ message: error, data: null, error: true });
+  }
+};
+
+export const updateEmployee = async (req: Request, res: Response) => {
+  try {
+    const { params, body } = req;
+
+    if (!params?.id) throw new Error("Id is Required");
+
+    const update = body as EmployeeInput;
+    if (!update) throw new Error();
+
+    let employee = await Employee.findOne({ id: params?.id });
+
+    if (!employee) throw new Error("Employee Not found");
+
+    employee.fullName = update?.fullName || employee?.fullName;
+    employee.userName = update?.userName || employee?.userName;
+    employee.salary = update?.salary || employee?.salary;
+
+    const result = await employee.save();
+    return res
+      .status(204)
+      .json({ message: "Successfully Updated", data: result, error: false });
+  } catch (error) {
+    return res.status(500).json({ message: error, data: null, error: true });
   }
 };

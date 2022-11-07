@@ -10,7 +10,7 @@ type EmployeeDocument = Document & {
 type EmployeeInput = {
   id: EmployeeDocument["id"];
   userName: EmployeeDocument["userName"];
-  fullName: EmployeeDocument["fullName"];
+  fullName?: EmployeeDocument["fullName"];
   salary: EmployeeDocument["salary"];
 };
 
@@ -22,7 +22,7 @@ const employeeSchema = new Schema(
       unique: true,
     },
     userName: { type: String, required: true, unique: true },
-    fullName: { type: String, required: true },
+    fullName: { type: String, required: false },
     salary: { type: Number, required: true },
   },
   {

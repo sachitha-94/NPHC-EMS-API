@@ -60,3 +60,30 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error, data: null, error: true });
   }
 };
+
+export const updateEmployee = async (req: Request, res: Response) => {
+  try {
+    const { params, body } = req;
+
+    if (!params?.id) throw new Error("Id is Required");
+
+    const update = body as EmployeeInput;
+    if (!update) throw new Error();
+
+    let employee = await Employee.findOne({ id: params?.id });
+
+    if (!employee) throw new Error("Employee Not found");
+
+    employee.fullName = update?.fullName || employee?.fullName;
+    employee.userName = update?.userName || employee?.userName;
+    employee.salary = update?.salary || employee?.salary;
+
+    const result = await employee.save();
+    return res
+      .status(201)
+      .json({ message: "Successfully Updated", data: result, error: false });
+  } catch (error) {
+    console.log("error", error);
+    return res.status(500).json({ message: error, data: null, error: true });
+  }
+};

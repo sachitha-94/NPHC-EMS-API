@@ -5,6 +5,7 @@ import {
   addEmployeesfromCSV,
   getAllEmployees,
   deleteEmployee,
+  updateEmployee,
 } from "../controllers/employee.controler";
 
 const router = Router();
@@ -14,7 +15,7 @@ router.get("/", getAllEmployees);
 
 router.post("/upload", upload.single("file"), addEmployeesfromCSV);
 
-router.put("/:id", (req, res) => {});
+router.put("/:id", updateEmployee);
 
 router.delete("/:id", deleteEmployee);
 

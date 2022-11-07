@@ -4,6 +4,7 @@ import multer from "multer";
 import {
   addEmployeesfromCSV,
   getAllEmployees,
+  deleteEmployee,
 } from "../controllers/employee.controler";
 
 const router = Router();
@@ -15,6 +16,6 @@ router.post("/upload", upload.single("file"), addEmployeesfromCSV);
 
 router.put("/:id", (req, res) => {});
 
-router.delete("/:id", (req, res) => {});
+router.delete("/:id", deleteEmployee);
 
 export default router;

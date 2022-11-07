@@ -23,7 +23,7 @@ export const addEmployeesfromCSV = async (req: Request, res: Response) => {
   try {
     const { file } = req;
 
-    if (!file?.path) throw Error();
+    if (!file?.path) throw Error("File is not fount");
 
     const jsonObj = await csv().fromFile(file?.path);
 
@@ -41,6 +41,22 @@ export const addEmployeesfromCSV = async (req: Request, res: Response) => {
       .status(201)
       .json({ message: "Successfully Uploaded", data: result, error: false });
   } catch (error) {
-    return res.status(500).json({ message: "Error", data: null, error: true });
+    return res.status(500).json({ message: error, data: null, error: true });
+  }
+};
+
+export const deleteEmployee = async (req: Request, res: Response) => {
+  try {
+    const { params } = req;
+
+    if (!params?.id) throw new Error("Id is Required");
+
+    const result = await Employee.findOneAndDelete({ id: params?.id });
+    if (!result) throw new Error("Employee Not found");
+    return res
+      .status(201)
+      .json({ message: "Successfully Deleted", data: result, error: false });
+  } catch (error) {
+    return res.status(500).json({ message: error, data: null, error: true });
   }
 };

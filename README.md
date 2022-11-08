@@ -51,5 +51,9 @@ Both the server and client need to be installed and started.
 4) `npm start`
 
 
+### Sample Data
+
+
+ Employee CSV File - (https://github.com/sachitha-94/NPHC-ESM-UI/blob/main/NPHC_ESM_Employees.csv)
 
 
